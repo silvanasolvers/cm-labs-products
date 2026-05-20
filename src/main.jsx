@@ -1,44 +1,125 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 
+const WHATSAPP_NUMBER = '573216424600'
+const TRM_ENDPOINT = 'https://www.datos.gov.co/resource/32sa-8pi3.json?$limit=1&$order=vigenciadesde%20DESC'
+const FALLBACK_TRM = 3796.87
+
 const products = [
-  ['Tirzepatida', '5mg', '$221.000', 'US$58.16'],
-  ['Tirzepatida', '10mg', '$276.250', 'US$72.70'],
-  ['Tirzepatida', '30mg', '$718.250', 'US$189.01'],
-  ['Retatrutide', '15mg', '$861.900', 'US$226.81'],
-  ['Retatrutide', '60mg', '$2.319.395', 'US$610.36'],
-  ['Tesamorelin', '10mg', '$442.000', 'US$116.31'],
-  ['TB-500', 'Recuperación', '$497.250', 'US$130.86'],
-  ['Glow Blend', 'BPC-157 + GHK-Cu + TB-500', '$442.000', 'US$116.31'],
-  ['Ipamorelin', 'Tonificación', '$718.250', 'US$189.01'],
-  ['Aicar', 'Resistencia', '$276.250', 'US$72.70'],
-  ['Glutatión', '600mg', '$331.500', 'US$87.24'],
-  ['Agua Bac.', '3ml', '$33.150', 'US$8.72'],
-  ['Agua Bac.', '10ml', '$66.300', 'US$17.45'],
+  { name: 'Tirzepatida', detail: '5mg', usd: 58.16, tag: 'Control metabólico' },
+  { name: 'Tirzepatida', detail: '10mg', usd: 72.70, tag: 'Control metabólico' },
+  { name: 'Tirzepatida', detail: '30mg', usd: 189.01, tag: 'Control metabólico' },
+  { name: 'Retatrutide', detail: '15mg', usd: 226.81, tag: 'Performance' },
+  { name: 'Retatrutide', detail: '60mg', usd: 610.36, tag: 'Performance' },
+  { name: 'Tesamorelin', detail: '10mg', usd: 116.31, tag: 'Composición' },
+  { name: 'TB-500', detail: 'Recuperación', usd: 130.86, tag: 'Recovery' },
+  { name: 'Glow Blend', detail: 'BPC-157 + GHK-Cu + TB-500', usd: 116.31, tag: 'Skin protocol' },
+  { name: 'Ipamorelin', detail: 'Tonificación', usd: 189.01, tag: 'Tone' },
+  { name: 'Aicar', detail: 'Resistencia', usd: 72.70, tag: 'Endurance' },
+  { name: 'Glutatión', detail: '600mg', usd: 87.24, tag: 'Antioxidante' },
+  { name: 'Agua Bac.', detail: '3ml', usd: 8.72, tag: 'Soporte' },
+  { name: 'Agua Bac.', detail: '10ml', usd: 17.45, tag: 'Soporte' },
 ]
 
+const copFormatter = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+})
+
+const usdFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+})
+
+const formatCop = (usd, trm) => copFormatter.format(Math.round(usd * trm / 50) * 50)
+const formatDate = (iso) => iso ? new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' }).format(new Date(iso)) : 'hoy'
+
+function useDailyTrm() {
+  const [trm, setTrm] = useState({ value: FALLBACK_TRM, date: null, status: 'loading', source: 'datos.gov.co' })
+
+  useEffect(() => {
+    let alive = true
+    async function fetchTrm() {
+      try {
+        const response = await fetch(TRM_ENDPOINT)
+        if (!response.ok) throw new Error(`TRM HTTP ${response.status}`)
+        const [latest] = await response.json()
+        const value = Number.parseFloat(latest?.valor)
+        if (!Number.isFinite(value)) throw new Error('TRM inválida')
+        if (alive) setTrm({ value, date: latest.vigenciadesde, status: 'live', source: 'datos.gov.co / Superfinanciera' })
+      } catch (error) {
+        console.warn('No se pudo consultar la TRM pública, usando respaldo.', error)
+        if (alive) setTrm((current) => ({ ...current, status: 'fallback' }))
+      }
+    }
+    fetchTrm()
+    return () => { alive = false }
+  }, [])
+
+  return trm
+}
+
 function App() {
+  const trm = useDailyTrm()
+  const whatsappHref = useMemo(() => {
+    const text = encodeURIComponent('Hola, quiero asesoría sobre productos CM Labs y precios del día.')
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
+  }, [])
+
   return <main className="page">
     <nav className="nav">
-      <div className="logo"><span>CM</span><div><strong>CM Labs</strong><small>Beauty Biology</small></div></div>
-      <a className="whatsapp" href="https://wa.me/" aria-label="Comprar por WhatsApp">Asesoría</a>
+      <a className="brand" href="#top" aria-label="CM Labs inicio">
+        <span className="brandMark">CM</span>
+        <span><strong>CM Labs</strong><small>Beauty Biology</small></span>
+      </a>
+      <div className="navActions">
+        <a href="#products">Productos</a>
+        <a className="whatsapp" href={whatsappHref} aria-label="Comprar por WhatsApp">WhatsApp</a>
+      </div>
     </nav>
-    <section className="hero">
-      <p className="eyebrow">CM Peptides · Lista corta</p>
-      <h1>Productos y precios CM Peptides.</h1>
-      <p className="subtitle">Lista corta de referencia. Compra guiada y disponibilidad por WhatsApp.</p>
+
+    <section className="hero" id="top">
+      <div className="heroCopy">
+        <p className="eyebrow">CM Peptides · precios vivos</p>
+        <h1>Lista premium, actualizada con la TRM del día.</h1>
+        <p className="subtitle">Precios de referencia en pesos colombianos calculados automáticamente desde USD con fuente pública gratuita.</p>
+        <div className="heroActions">
+          <a className="primary" href={whatsappHref}>Pedir asesoría por WhatsApp</a>
+          <a className="secondary" href="#products">Ver productos</a>
+        </div>
+      </div>
+      <aside className="trmPanel" aria-label="TRM del día">
+        <span className={`status ${trm.status}`}>{trm.status === 'live' ? 'TRM en vivo' : trm.status === 'loading' ? 'Consultando TRM' : 'TRM respaldo'}</span>
+        <strong>{copFormatter.format(trm.value)}</strong>
+        <p>1 USD · vigente {formatDate(trm.date)}</p>
+        <small>Fuente: {trm.source}</small>
+      </aside>
     </section>
-    <section className="grid" aria-label="Productos y precios">
-      {products.map(([name, detail, cop, usd], i) => <article className="card" key={`${name}-${detail}`}>
-        <div className="cardTop"><span>{String(i+1).padStart(2,'0')}</span><small>Peptides</small></div>
-        <h2>{name}</h2>
-        <p>{detail}</p>
-        <div className="prices"><strong>{cop}</strong><span>{usd}</span></div>
+
+    <section className="notice" aria-label="Nota de precios">
+      <span>Nota importante</span>
+      <p>Los precios se ajustan a la TRM oficial del día y pueden variar según disponibilidad, lote y confirmación final por WhatsApp.</p>
+    </section>
+
+    <section className="grid" id="products" aria-label="Productos y precios">
+      {products.map((product, i) => <article className="card" key={`${product.name}-${product.detail}`}>
+        <div className="cardTop"><span>{String(i + 1).padStart(2, '0')}</span><small>{product.tag}</small></div>
+        <div className="cardBody">
+          <h2>{product.name}</h2>
+          <p>{product.detail}</p>
+        </div>
+        <div className="prices">
+          <strong>{formatCop(product.usd, trm.value)}</strong>
+          <span>{usdFormatter.format(product.usd)} base USD</span>
+        </div>
       </article>)}
     </section>
+
     <footer>
-      <span>Precios sujetos a disponibilidad.</span>
+      <span>WhatsApp: +57 321 642 4600</span>
       <span>CM Labs · Ciencia que se siente bella.</span>
     </footer>
   </main>
