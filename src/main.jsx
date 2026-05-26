@@ -4,22 +4,22 @@ import './styles.css'
 
 const WHATSAPP_NUMBER = '573216424600'
 const TRM_ENDPOINT = 'https://www.datos.gov.co/resource/32sa-8pi3.json?$limit=1&$order=vigenciadesde%20DESC'
-const FALLBACK_TRM = 3796.87
+const FALLBACK_TRM = 3667.06
 
 const products = [
-  { name: 'Tirzepatida', detail: '5mg', usd: 58.16, tag: 'Control metabólico' },
-  { name: 'Tirzepatida', detail: '10mg', usd: 72.70, tag: 'Control metabólico' },
-  { name: 'Tirzepatida', detail: '30mg', usd: 189.01, tag: 'Control metabólico' },
-  { name: 'Retatrutide', detail: '15mg', usd: 226.81, tag: 'Performance' },
-  { name: 'Retatrutide', detail: '60mg', usd: 610.36, tag: 'Performance' },
-  { name: 'Tesamorelin', detail: '10mg', usd: 116.31, tag: 'Composición' },
-  { name: 'TB-500', detail: 'Recuperación', usd: 130.86, tag: 'Recovery' },
-  { name: 'Glow Blend', detail: 'BPC-157 + GHK-Cu + TB-500', usd: 116.31, tag: 'Skin protocol' },
-  { name: 'Ipamorelin', detail: 'Tonificación', usd: 189.01, tag: 'Tone' },
-  { name: 'Aicar', detail: 'Resistencia', usd: 72.70, tag: 'Endurance' },
-  { name: 'Glutatión', detail: '600mg', usd: 87.24, tag: 'Antioxidante' },
-  { name: 'Agua Bac.', detail: '3ml', usd: 8.72, tag: 'Soporte' },
-  { name: 'Agua Bac.', detail: '10ml', usd: 17.45, tag: 'Soporte' },
+  { name: 'Tirzepatida', detail: '5mg', usd: 60.27, tag: 'Línea metabólica' },
+  { name: 'Tirzepatida', detail: '10mg', usd: 75.33, tag: 'Línea metabólica' },
+  { name: 'Tirzepatida', detail: '30mg', usd: 195.87, tag: 'Línea metabólica' },
+  { name: 'Retatrutide', detail: '15mg', usd: 235.04, tag: 'Performance' },
+  { name: 'Retatrutide', detail: '60mg', usd: 632.49, tag: 'Performance' },
+  { name: 'Tesamorelin', detail: '10mg', usd: 120.53, tag: 'Composición corporal' },
+  { name: 'TB-500', detail: 'Recuperación', usd: 135.60, tag: 'Recovery' },
+  { name: 'Glow Blend', detail: 'BPC-157 + GHK-Cu + TB-500', usd: 120.53, tag: 'Skin protocol' },
+  { name: 'Ipamorelin', detail: 'Tonificación', usd: 195.87, tag: 'Tone' },
+  { name: 'Aicar', detail: 'Resistencia', usd: 75.33, tag: 'Endurance' },
+  { name: 'Glutatión', detail: '600mg', usd: 90.40, tag: 'Antioxidante' },
+  { name: 'SS-31', detail: '10mg', usd: 133.62, tag: 'Soporte mitocondrial' },
+  { name: 'Agua bacteriostática', detail: '10ml', usd: 18.08, tag: 'Soporte' },
 ]
 
 const copFormatter = new Intl.NumberFormat('es-CO', {
