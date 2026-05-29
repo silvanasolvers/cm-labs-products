@@ -4,10 +4,10 @@ import './styles.css'
 
 const WHATSAPP_NUMBER = '573216424600'
 const TRM_ENDPOINT = 'https://www.datos.gov.co/resource/32sa-8pi3.json?$limit=1&$order=vigenciadesde%20DESC'
-const FALLBACK_TRM = 3667.06
+const FALLBACK_TRM = 3646.58
 
 const products = [
-  { name: 'Tirzepatida', detail: '5mg', usd: 60.27, tag: 'Línea metabólica' },
+  { name: 'Tirzepatida', detail: '5mg', usd: 60.60, tag: 'Línea metabólica' },
   { name: 'Tirzepatida', detail: '10mg', usd: 75.33, tag: 'Línea metabólica' },
   { name: 'Tirzepatida', detail: '30mg', usd: 195.87, tag: 'Línea metabólica' },
   { name: 'Retatrutide', detail: '15mg', usd: 235.04, tag: 'Performance' },
